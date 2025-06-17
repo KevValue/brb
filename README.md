@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BRB
 
-## Getting Started
+**Be Right Back**
+***Building Results Boss!***
 
-First, run the development server:
+## Preword
+As a solutions architect, I've consistently challenged myself to tackle real-world problems, improve my skills, and translate my learning experience into valuable, user-focused solutions. From a high level perspective, the front-end side presents a unique, yet surmountable challenge complimentary to my experience in cloud infrastructure, micro services and IT layers.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Deep diving into challenges is how I grow -- Every problem I solve expands my skills and brings me closer to delivering better solutions. It usually goes like this: First, a huge sigh of relief...then, 'What's next'? 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Eager to learn, curious to explore possiblities, when I face a problem, I'm ready to tackle it and overcome the "have I seen this before" moment and--hopefully--make it better then it was for others. Another big plus is smooth coms with cross-functional teams, a vital part of successful development.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## For the reader
+This repository showcases my progress in taking the project from development to deployment. If there's any way I can assist or collaborate with you, feel free to reach out via direct message.
+**Im currently seeking an internship role as of this commit**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Content
+A time line of my deep dive into Front-End development - and translating the results into real world value.
 
-## Learn More
+## Problems solved
 
-To learn more about Next.js, take a look at the following resources:
+In my front-end journey, I've encountered problem solving in the following key areas:
+- React UI rendering lifecycle & Next Request Cycle, for development speed.
+- Defining clear boundary between client components and server actions, for scalability.
+- Implementing Smooth UI Transitions that follow UX principles, for improving overall user engagement.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Best practices
+- [x] structure clean, maintainable code for a responsive website using Git workflow, environmental variables, A/B testing, and a consistent folder structure.
+- [x] define clear KPIs for actionable items
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
