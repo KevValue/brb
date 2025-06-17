@@ -11,7 +11,7 @@ Deep diving into challenges is how I grow -- Every problem I solve expands my sk
 Eager to learn, curious to explore possiblities, when I face a problem, I'm ready to tackle it and overcome the "have I seen this before" moment and--hopefully--make it better then it was for others. Another big plus is smooth coms with cross-functional teams, a vital part of successful development.
 
 ## For the reader
-This repository showcases my progress in taking the project from development to deployment. If there's any way I can assist or collaborate with you, feel free to reach out via direct message.
+This repository showcases my progress in taking the project from development to deployment. I have had previous extensive experience, but this repository only contains my latest forward work. If there's any way I can assist or collaborate with you, feel free to reach out via direct message.
 **Im currently seeking an internship role as of this commit**
 
 ## Content
