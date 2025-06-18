@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 const mockData = [
   "chicago",
@@ -11,13 +11,52 @@ const mockData = [
   "chopper"
 ]
 
-const debounce = () => { }
+type varvoid = (...args: any[]) => void // type alias
+
+const debounce = <T extends varvoid>(fn: T, delay: number) => { // generic type parameter with a constraint
+  let timeoutId: ReturnType<typeof setTimeout>
+
+  return (...args: Parameters<T>) => { // utility type
+    clearTimeout(timeoutId) // on every keystroke - cancel timeoutId and set new timeoutId - deliver final action on pause
+    timeoutId = setTimeout(() => {
+      fn(...args)
+    }, delay)
+  }
+}
 
 export const ClientSide = () => {
   const [input, setInput] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [showDropDown, setShowDropDown] = useState<boolean>(false)
+
+  const sanitizeInput = (input: string) => {
+    return input.trim()
+  }
+
+  // filterSuggestions only when debounce clears the final timer id or user pauses typing
+  const filterSuggestions = (query: string) => {
+    const cleanQuery = query.toLowerCase()
+    // simple filter, swap with an efficient trie data structure
+    const matches = mockData.filter((item) => item.toLowerCase().startsWith(cleanQuery))
+
+    setSuggestions(matches)
+    setShowDropDown(true)
+    setIsLoading(false)
+  }
+  const debounceFilter = useMemo(() => debounce(filterSuggestions, 300), [])
+
+  useEffect(() => {
+    const cleanInput = sanitizeInput(input)
+    if (!cleanInput) {
+      setSuggestions([])
+      setShowDropDown(false)
+      return
+    }
+
+    setIsLoading(true) // turn on loading animation to show reponsiveness to user
+    debounceFilter(cleanInput)
+  }, [input])
 
   // wide type FormEvent, narrow type ChangeEvent
   const onInputChange = (e: React.FormEvent<HTMLInputElement>) => {
