@@ -44,7 +44,7 @@ export const ClientSide = () => {
     setShowDropDown(true)
     setIsLoading(false)
   }
-  const debounceFilter = useMemo(() => debounce(filterSuggestions, 300), [])
+  const debounceFilter = useMemo(() => debounce(filterSuggestions, 150), [])
 
   // wide type FormEvent, narrow type ChangeEvent
   const onInputChange = (e: React.FormEvent<HTMLInputElement>) => {
