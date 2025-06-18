@@ -46,6 +46,21 @@ export const ClientSide = () => {
   }
   const debounceFilter = useMemo(() => debounce(filterSuggestions, 300), [])
 
+  // wide type FormEvent, narrow type ChangeEvent
+  const onInputChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value
+    setInput(value)
+
+    const cleanValue = value.trim()
+    if (cleanValue) {
+      debounceFilter(cleanValue)
+    } else {
+      setSuggestions([])
+      setShowDropDown(false)
+    }
+  }
+
+  // useEffect area
   useEffect(() => {
     const cleanInput = sanitizeInput(input)
     if (!cleanInput) {
@@ -58,14 +73,12 @@ export const ClientSide = () => {
     debounceFilter(cleanInput)
   }, [input])
 
-  // wide type FormEvent, narrow type ChangeEvent
-  const onInputChange = (e: React.FormEvent<HTMLInputElement>) => {
-    setInput(e.currentTarget.value)
-  }
-
+  // render area
   const renderSuggestions = (suggestions: string[]) => {
     return suggestions.map((item, idx) => <div key={idx}>{item}</div>)
   }
+
+  // logging area
 
   return (<div>
     <input name="input" value={input} onChange={onInputChange} placeholder="Type to search items..." />
