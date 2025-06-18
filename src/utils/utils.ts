@@ -1,10 +1,13 @@
 // all utils delimited by comments for purpose of development speed.
 // Faster navigation, central documentation, uniformity and consistency.
 
+
+import { NextResponse } from 'next/server'
+
 // network
 export async function fetchWrapper<T>(
 	url: string,
-	opts: RequestInit = {}
+	opts: RequestInit
 ): Promise<IApiResponse<T>> {
 	const res = await fetch(url, opts)
 
@@ -12,11 +15,24 @@ export async function fetchWrapper<T>(
 		throw new Error(`Http error. Status: ${res.status}`)
 	}
 
-	const data: IApiResponse<T> = await res.json()
-
-	console.log(data.message)
+	const data = await res.json()
 
 	return data
+}
+
+// JSON
+export function unwrapJSON<T>(
+	data: IApiResponse<T>
+) {
+	console.log(data.message)
+	return data.payload
+}
+
+export function wrapJSON<T>(
+	payload: T,
+	message: string
+): NextResponse {
+	return NextResponse.json({ message, payload })
 }
 
 // standard
