@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "lil api",
-  description: "new cool kid on the block",
+  title: "BRB",
+  description: "Building Results Boss",
 };
 
 export default async function RootLayout({
