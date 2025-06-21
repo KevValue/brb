@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 type MessageProps = {
   user: string
@@ -52,6 +52,27 @@ export default function ClientSide() {
     { id: 9, user: 'System', message: 'Ping completed for all AWS services. No issues detected.', timestamp: '10:08 AM' }
   ];
 
+  const [messages, setMessages] = useState<Message[]>([])
+
+  const getMessage = () => {
+    // poll mockData, ingress messages by 1 network GET every 5 seconds
+    if (mockMessages.length > 0) {
+      const newMessage = mockMessages.shift()
+      setMessages((prevMessages) => ([...prevMessages, newMessage]))
+    }
+    return []
+  }
+
+  // mock short polling - a better solution would be to get metadata on how to consume messages
+  useEffect(() => {
+    const intervalID = setInterval(() => {
+      getMessage()
+    }, 1000)
+    return () => {
+      clearInterval(intervalID)
+    }
+  }, [])
+
   const MessageList = () => {
     const formatMessage = (message: any) => {
       const parts = message.split(' ')
@@ -75,7 +96,7 @@ export default function ClientSide() {
 
     return (
       <>
-        {mockMessages.map((msg) => (
+        {messages.map((msg) => (
           <Message
             key={msg.id}
             user={msg.user}
