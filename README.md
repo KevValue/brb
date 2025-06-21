@@ -7,7 +7,7 @@ https://github.com/user-attachments/assets/eb709486-ff5b-4397-8667-3c8e8e91dc50
 
 ## Preword
 
-I’ve always been focused on finding practical ways to solve real problems and continuously improve my skills. My experience in areas like cloud infrastructure and microservices has given me a strong understanding of how different parts of a system work together to create seamless, user-friendly experiences. Recently, I’ve been diving deeper into front-end development, and it feels like a natural next step in my journey.
+I’ve always been focused on finding practical ways to solve real problems and continuously improve my skills. My experience in areas like cloud infrastructure and microservices has given me a strong understanding of how different parts of a system work together to create user-friendly experiences. Recently, I’ve been diving deeper into front-end development, and it feels like a natural next step in my journey.
 
 I find that diving into challenges is the best way I grow—every problem I tackle helps expand my skill set and brings me closer to delivering better solutions. It usually starts with a deep breath, a bit of relief once it clicks, and then... “What’s next?”
 
@@ -18,7 +18,7 @@ This repository showcases my progress in taking the project from development to 
 **Im currently seeking an internship role as of this commit**
 
 ## Content
-A time line of my deep dive into Front-End development - and translating the results into real world value.
+A time line of my deep dive into Front-End development - and translating the results into real world value for users, teams, and customers.
 
 ## Problems solved
 
