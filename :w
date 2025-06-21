@@ -17,10 +17,6 @@ export default function ClientSide() {
     )
   }
 
-  const mockMessages = [
-
-  ]
-
   return (
     <div>
       <div className="w-full flex flex-row">
@@ -42,7 +38,7 @@ export default function ClientSide() {
           <div className="h-1/2 m-3 flex rounded-md bg-zinc-900 border-box">
             <div className="flex-grow flex flex-col">
               <div className="text-xl font-bold p-3">Log</div>
-              <div className="log flex-grow bg-zinc-800 p-3 overflow-y-auto flex flex-col gap-2">
+              <div className="flex-grow bg-zinc-800 p-3 overflow-y-auto flex flex-col gap-2">
                 <Message />
                 <Message />
                 <Message />
