@@ -1,0 +1,34 @@
+# Requirements
+#
+# Code pull + Rebuild on remote - EC2
+# Trigger on push to development branch
+#
+# SSH into EC2 Instance
+#
+# Pull the latest code from the development branch
+#
+# Stop and restart docker dev container with the latest docker build
+#
+# or
+#
+# build docker image locally - push to remote registry and then pull image into remote EC2 machine
+# requires remote registry component (im going to stick with the simple code pulll for now)
+
+name: dev trigger
+
+on:
+  push:
+    branches:
+      - docker-deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: just echo for now
+        run: |
+          echo "hi your workflow is saying hi!"
