@@ -6,6 +6,8 @@ Description: BRB Network Infastructure - One public and One Private Subnet
 # BRB-dev-Subnet-public-nat-a
 
 Parameters:
+  BRBVpc:
+    Type: AWS::EC2::VPC::Id
   PublicSubnetCidr:
     Type: String
     Default: 10.0.0.0/28
@@ -17,16 +19,6 @@ Resources:
   # network infrastructure
   # refValue: { Type, Properties}
   # Pascal
-  BRBVpc:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 10.0.0.0/16
-      EnableDnsSupport: true
-      EnableDnsHostNames: true
-      Tags:
-        # kebab
-        - Key: Name
-          Value: brb-dev-vpc
 
   BRBIgw:
     Type: AWS::EC2::InternetGateway
@@ -100,9 +92,11 @@ Resources:
 
   BRBAttachIGW:
     Type: AWS::EC2::VPCGatewayAttachment
+    DependsOn:
+     - BRBIgw
     Properties:
       VpcId: !Ref BRBVpc
-      InternetgatewayId: !Ref BRBIgw
+      InternetGatewayId: !Ref BRBIgw
 
 # Outputs for succeeding stacks
 Outputs:

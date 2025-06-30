@@ -1,128 +1,19 @@
 Description: Lambda function stack to create AMI from EC2 instance
 
 Parameters:
-  AmiInstanceIdParam:
+  LambdaFunctionArn:
     Type: String
-    Description: EC2 instance ID from previous stack
+    Description: "ARN of the Lambda function"
+    AllowedPattern: "^arn:aws:lambda:[a-z0-9-]+:[0-9]{12}:function:.+$"
+    ConstraintDescription: "Must be a valid Lambda function ARN"
 
 Resources:
-  AmiLambdaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: AmiLambdaPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ec2:CreateImage
-                  - ec2:DeregisterImage
-                  - ec2:DescribeImages
-                  - ec2:DescribeInstanceStatus
-                  - ssm:GetParameter
-                Resource: "*"
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: "*"
-
-  AmiCreationLambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: brb-create-ami
-      Runtime: nodejs18.x
-      Handler: index.handler
-      Role: !GetAtt AmiLambdaRole.Arn
-      Timeout: 300
-      Code:
-        ZipFile: |
-          const AWS = require('aws-sdk');
-          const ec2 = new AWS.EC2();
-          const ssm = new AWS.SSM();
-          const https = require('https');
-          const url = require('url');
-
-          exports.handler = async function(event, context) {
-            const instanceId = event.ResourceProperties.InstanceId;
-            const paramName = "/ami-creation/instance-ready";
-
-            try {
-              if (event.RequestType === 'Create') {
-                for (let i = 0; i < 20; i++) {
-                  try {
-                    const param = await ssm.getParameter({ Name: paramName }).promise();
-                    if (param.Parameter.Value === "true") break;
-                  } catch (err) {
-                    if (err.code !== "ParameterNotFound") throw err;
-                  }
-                  await new Promise(r => setTimeout(r, 15000));
-                }
-
-                const imageName = `brb-ami-${Date.now()}`;
-                const result = await ec2.createImage({ InstanceId: instanceId, Name: imageName, NoReboot: true }).promise();
-                const imageId = result.ImageId;
-                await ec2.waitFor("imageAvailable", { ImageIds: [imageId] }).promise();
-                await sendResponse(event, context, "SUCCESS", { ImageId: imageId }, imageId);
-              } else if (event.RequestType === 'Delete') {
-                const imageId = event.PhysicalResourceId;
-                if (imageId.startsWith("ami-")) {
-                  await ec2.deregisterImage({ ImageId: imageId }).promise();
-                }
-                await sendResponse(event, context, "SUCCESS", {}, imageId);
-              } else {
-                await sendResponse(event, context, "SUCCESS", {}, event.PhysicalResourceId);
-              }
-            } catch (err) {
-              await sendResponse(event, context, "FAILED", { Error: err.message }, "failed");
-            }
-          };
-
-          function sendResponse(event, context, status, data, physicalId) {
-            return new Promise((resolve, reject) => {
-              const responseBody = JSON.stringify({
-                Status: status,
-                Reason: `See logs: ${context.logStreamName}`,
-                PhysicalResourceId: physicalId,
-                StackId: event.StackId,
-                RequestId: event.RequestId,
-                LogicalResourceId: event.LogicalResourceId,
-                Data: data
-              });
-
-              const parsedUrl = url.parse(event.ResponseURL);
-              const options = {
-                hostname: parsedUrl.hostname,
-                port: 443,
-                path: parsedUrl.path,
-                method: 'PUT',
-                headers: {
-                  'Content-Type': '',
-                  'Content-Length': Buffer.byteLength(responseBody)
-                }
-              };
-
-              const req = https.request(options, res => resolve());
-              req.on('error', e => reject(e));
-              req.write(responseBody);
-              req.end();
-            });
-          }
-
   AmiBuilderCustomResource:
     Type: Custom::AmiBuilder
     Properties:
-      ServiceToken: !GetAtt AmiCreationLambda.Arn
-      InstanceId: !Ref AmiInstanceIdParam
+      #ServiceToken: !GetAtt AmiCreationLambda.Arn
+      ServiceToken: !Ref LambdaFunctionArn
+      InstanceId: !ImportValue brb-ami-instance-id
 
 Outputs:
   CreatedAmiId:
