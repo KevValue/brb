@@ -54,7 +54,7 @@ Resources:
       VpcId: !Ref BRBVpc
       CidrBlock: !Ref PrivateSubnetCidr
       MapPublicIpOnLaunch: false
-      AvailabilityZone: !Select [0, !GetAzs '']
+      AvailabilityZone: !Select [0, !GetAZs '']
       Tags:
         - Key: Name
           Value: brb-dev-subnet-private
@@ -62,7 +62,7 @@ Resources:
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     DependsOn:
-      - BRB-Attach-IGW
+      - BRBAttachIGW
     Properties:
       VpcId: !Ref BRBVpc
       Tags:
