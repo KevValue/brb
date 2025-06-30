@@ -1,6 +1,0 @@
-Parameters:
-  Name:
-    Type: String
-    Description: your take
-    Default: value
-Resource:

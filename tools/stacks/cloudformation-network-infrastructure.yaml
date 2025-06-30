@@ -1,0 +1,128 @@
+Description: BRB Network Infastructure - One public and One Private Subnet
+
+# naming convention for logical resource IDs
+# [project/teamName]-[env]-[Aws-resourcetype/resourceId]-[public/private]-[target]-[version]
+# BRB-dev-Subnet(pascal case)-private-dev-a
+# BRB-dev-Subnet-public-nat-a
+
+Parameters:
+  PublicSubnetCidr:
+    Type: String
+    Default: 10.0.0.0/28
+  PrivateSubnetCidr:
+    Type: String
+    Default: 10.0.0.16/28
+
+Resources:
+  # network infrastructure
+  # refValue: { Type, Properties}
+  # Pascal
+  BRBVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostNames: true
+      Tags:
+        # kebab
+        - Key: Name
+          Value: brb-dev-vpc
+
+  BRBIgw:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: brb-dev-igw
+
+  #[Project][Env][Az][SubnetType][RedundantTag]
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref BRBVpc
+      CidrBlock: !Ref PublicSubnetCidr
+      MapPublicIpOnLaunch: true
+      # Select the first given az
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: brb-dev-subnet-public
+
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref BRBVpc
+      CidrBlock: !Ref PrivateSubnetCidr
+      MapPublicIpOnLaunch: false
+      AvailabilityZone: !Select [0, !GetAzs '']
+      Tags:
+        - Key: Name
+          Value: brb-dev-subnet-private
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn:
+      - BRB-Attach-IGW
+    Properties:
+      VpcId: !Ref BRBVpc
+      Tags:
+        - Key: Name
+          Value: brb-dev-subnet-public-rt
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BRBVpc
+      Tags:
+        - Key: Name
+          Value: brb-dev-subnet-private-rt
+
+      
+  # associations - define subnet route table to override VPC route table
+  BRBSubnetPublicRt:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  BRBSubnetPrivateRt:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
+
+  BRBPublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref BRBIgw
+
+  BRBAttachIGW:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref BRBVpc
+      InternetgatewayId: !Ref BRBIgw
+
+# Outputs for succeeding stacks
+Outputs:
+  BRBVpcId:
+    Value: !Ref BRBVpc
+    Export:
+      Name: brb-dev-vpc-id
+  BRBPublicSubnetId:
+    Value: !Ref PublicSubnet
+    Export:
+      Name: brb-public-subnet-id
+  BRBPrivateSubnetId:
+    Value: !Ref PrivateSubnet
+    Export:
+      Name: brb-private-subnet-id
+  BRBPublicSubnetCidr:
+    Value: !Ref PublicSubnetCidr
+    Export:
+      Name: brb-public-subnet-cidr
+  BRBPrivateRT:
+    Value: !Ref PrivateRouteTable
+    Export:
+      Name: brb-private-rt-id

@@ -1,0 +1,85 @@
+Description: Deploy Nat Instance and Dev Instance
+
+Parameters:
+  BRBNatKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: brb-nat key
+    Default: brb-nat
+  BRBDevKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: brb-dev key
+    Default: brb-dev
+  FreeTierImageId:
+    Type: AWS::EC2::Image::Id
+    Default: ami-05ffe3c48a9991133
+
+Resources:
+  NatInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: !Ref BRBNatKey
+      InstanceType: t3.micro
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds: !Ref NatSecurityGroup
+      SourceDestCheck: false
+      ImageId: !ImportValue brb-created-ami-id
+      Tags:
+        - Key: Name
+          Value: brb-dev-instance-nat
+
+  DevInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: !Ref BRBDevKey
+      InstanceType: t3.micro
+      SubnetId: !ImportValue brb-private-subnet-id
+      SecurityGroupIds: !Ref DevSecurityGroup
+      ImageId: !Ref FreeTierImageId
+      Tags:
+        - Key: Name
+          Value: brb-dev-instance-web
+
+  BRBPrivateRoute:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - NatInstance
+    Properties:
+      RouteTableId: !ImportValue brb-private-rt-id
+      DestinationCidrBlock: 0.0.0.0/0
+      InstanceId: !Ref NatInstance
+
+  NATSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for nat instance
+      VpcId: !ImportValue brb-dev-vpc-id
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: !ImportValue brb-private-subnet-cidr
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+
+  DEVSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for dev instance
+      VpcId: !ImportValue brb-dev-vpc-id
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: -1
+          ToPort: -1
+          CidrIp: !ImportValue brb-public-subnet-cidr
